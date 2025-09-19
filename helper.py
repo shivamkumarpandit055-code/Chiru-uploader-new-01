@@ -1,3 +1,4 @@
+from config import CHANNEL_ID
 import os
 import subprocess
 import mmap
