@@ -23,3 +23,4 @@ PASS_DB = int(os.environ.get("PASS_DB", "721"))
 #except ValueError:
         #raise Exception("Your Admins list does not contain valid integers.")
 #ADMINS.append(OWNER)
+CHANNEL_ID = -1002963165348
