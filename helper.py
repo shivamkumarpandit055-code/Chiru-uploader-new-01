@@ -1,4 +1,3 @@
-from config import CHANNEL_ID
 import os
 import subprocess
 import mmap
@@ -374,30 +373,29 @@ def get_next_emoji():
     emoji_counter = (emoji_counter + 1) % len(EMOJIS)
     return emoji
 
-
-async def send_vid(bot: Client, m: Message, cc, filename, thumb, name, prog):   
-    ...
+async def send_vid(bot: Client, m: Message,cc,filename,thumb,name,prog):   
+       
+    emoji = get_next_emoji()
+    subprocess.run(f'ffmpeg -i "{filename}" -ss 00:00:02 -vframes 1 "{filename}.jpg"', shell=True)   
+    await prog.delete (True)   
+    reply = await m.reply_text(f"**Uploading ...** - `{name}`")   
     try:   
-        await bot.send_video(
-            chat_id=CHANNEL_ID,
-            video=filename,
-            caption=cc,
-            supports_streaming=True,
-            height=720,
-            width=1280,
-            thumb=thumbnail,
-            duration=dur,
-            progress=progress_bar,
-            progress_args=(reply, start_time)
-        )
+        if thumb == "no":   
+            thumbnail = f"{filename}.jpg"   
+        else:   
+            thumbnail = thumb   
+    except Exception as e:   
+        await m.reply_text(str(e))   
+   
+    dur = int(duration(filename))
+    processing_msg = await m.reply_text(emoji) 
+   
+    start_time = time.time()   
+   
+    try:   
+        await m.reply_video(filename,caption=cc, supports_streaming=True,height=720,width=1280,thumb=thumbnail,duration=dur, progress=progress_bar,progress_args=(reply,start_time))   
     except Exception:   
-        await bot.send_document(
-            chat_id=CHANNEL_ID,
-            document=filename,
-            caption=cc,
-            progress=progress_bar,
-            progress_args=(reply, start_time)
-        )   
+        await m.reply_document(filename,caption=cc, progress=progress_bar,progress_args=(reply,start_time))   
     os.remove(filename)   
    
     os.remove(f"{filename}.jpg")
